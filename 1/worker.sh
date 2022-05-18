@@ -6,8 +6,8 @@ echo "[TASK 1] K8S Controlplane Join - API Server 192.168.10.10"
 kubeadm join --token 123456.1234567890123456 --discovery-token-unsafe-skip-ca-verification 192.168.10.10:6443
 
 echo "[TASK 2] Config kubeconfig" 
-mkdir -p $HOME/.kube
-sshpass -p "qwe123" scp -o StrictHostKeyChecking=no root@k8s-m:/etc/kubernetes/admin.conf $HOME/.kube/config
+mkdir -p /root/.kube
+sshpass -p "qwe123" scp -o StrictHostKeyChecking=no root@k8s-m:/etc/kubernetes/admin.conf /root/.kube/config
 
 echo "[TASK 3] Source the completion"
 echo 'source <(kubectl completion bash)' >> /etc/profile

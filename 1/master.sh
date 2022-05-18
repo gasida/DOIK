@@ -5,9 +5,9 @@ echo "[TASK 1] Initial Kubernetes - Pod CIDR 172.16.0.0/16 , Service CIDR 10.200
 kubeadm init --token 123456.1234567890123456 --token-ttl 0 --pod-network-cidr=172.16.0.0/16 --apiserver-advertise-address=192.168.10.10 --service-cidr 10.200.1.0/24 
 
 echo "[TASK 2] Setting kube config file"
-mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-chown $(id -u):$(id -g) $HOME/.kube/config
+mkdir -p /root/.kube
+cp -i /etc/kubernetes/admin.conf /root/.kube/config
+chown $(id -u):$(id -g) /root/.kube/config
 
 echo "[TASK 3] Install Calico CNI"
 #kubectl apply -f https://projectcalico.docs.tigera.io/manifests/calico.yaml
@@ -32,7 +32,7 @@ ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
 
 echo "[TASK 8] Install Kubeps & Setting PS1"
 git clone https://github.com/jonmosco/kube-ps1.git /root/kube-ps1
-cat <<"EOT" >> ~/.bash_profile
+cat <<"EOT" >> /root/.bash_profile
 source /root/kube-ps1/kube-ps1.sh
 KUBE_PS1_SYMBOL_ENABLE=false
 function get_cluster_short() {
