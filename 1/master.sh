@@ -18,8 +18,6 @@ curl -L https://github.com/projectcalico/calico/releases/download/v3-22.2/calico
 chmod +x calicoctl && mv calicoctl /usr/bin
 
 echo "[TASK 5] Source the completion"
-# source bash-completion for kubectl kubeadm
-source <(kubectl completion bash)
 ## Source the completion script in your ~/.bashrc file
 echo 'source <(kubectl completion bash)' >> /etc/profile
 
@@ -47,7 +45,7 @@ EOT
 kubectl config rename-context "kubernetes-admin@kubernetes" "DOIK-Lab"
 
 echo "[TASK 9] Install Packages"
-apt install kubetail etcd-client -y -qq
+apt install kubetail etcd-client -y
 
 echo "[TASK 10] Install Helm"
 curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash

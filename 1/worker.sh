@@ -10,7 +10,6 @@ mkdir -p $HOME/.kube
 sshpass -p "qwe123" scp -o StrictHostKeyChecking=no root@k8s-m:/etc/kubernetes/admin.conf $HOME/.kube/config
 
 echo "[TASK 3] Source the completion"
-source <(kubectl completion bash)
 echo 'source <(kubectl completion bash)' >> /etc/profile
 
 echo "[TASK 4] Alias kubectl to k"
@@ -20,7 +19,7 @@ echo 'complete -F __start_kubectl k' >> /etc/profile
 echo "[TASK 5] Install Helm"
 curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
-echo "[TASK 5] Install calicoctl Tool - v$1"
+echo "[TASK 5] Install calicoctl Tool"
 curl -L https://github.com/projectcalico/calico/releases/download/v3.22.2/calicoctl-linux-amd64 -o calicoctl
 chmod +x calicoctl && mv calicoctl /usr/bin
 
