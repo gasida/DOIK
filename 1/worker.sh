@@ -7,7 +7,7 @@ kubeadm join --token 123456.1234567890123456 --discovery-token-unsafe-skip-ca-ve
 
 echo "[TASK 2] Config kubeconfig" 
 mkdir -p /root/.kube
-sshpass -p "qwe123" scp -o StrictHostKeyChecking=no root@k8s-m:/etc/kubernetes/admin.conf /root/.kube/config
+sshpass -p "Pa55W0rd" scp -o StrictHostKeyChecking=no root@k8s-m:/etc/kubernetes/admin.conf /root/.kube/config
 
 echo "[TASK 3] Source the completion"
 echo 'source <(kubectl completion bash)' >> /etc/profile

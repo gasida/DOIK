@@ -1,7 +1,7 @@
 #!/bin/bash -xe
 echo ">>>> Initial Config Start <<<<"
 echo "[TASK 1] Setting Root Password"
-printf "qwe123\nqwe123\n" | passwd
+printf "Pa55W0rd\nPa55W0rd\n" | passwd
 
 echo "[TASK 2] Setting Sshd Config"
 sed -i "s/^PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
@@ -21,7 +21,7 @@ systemctl stop ufw && systemctl disable ufw
 systemctl stop apparmor && systemctl disable apparmor
 
 echo "[TASK 5] Install Packages"
-apt update && apt install -y tree jq prettyping sshpass bridge-utils net-tools bat exa
+apt update && apt install -y tree jq sshpass bridge-utils net-tools bat exa
 echo 'alias cat=batcat' >> /etc/profile
 
 echo "[TASK 6] Setting Local DNS Using Hosts file"
