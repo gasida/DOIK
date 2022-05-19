@@ -32,6 +32,7 @@ echo "[TASK 9] Install Helm"
 curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
 echo "[TASK 10] Install Calico CNI"
+sleep 1m
 #kubectl apply -f https://projectcalico.docs.tigera.io/manifests/calico.yaml
 kubectl apply -f https://raw.githubusercontent.com/gasida/book-k8s-network/main/5/calico-v3.22.2.yaml
 
