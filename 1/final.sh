@@ -4,8 +4,8 @@ echo "[TASK 10] Install Calico CNI"
 #kubectl apply -f https://projectcalico.docs.tigera.io/manifests/calico.yaml
 kubectl apply -f https://raw.githubusercontent.com/gasida/book-k8s-network/main/5/calico-v3.22.2.yaml
 
-echo "sleep 1m"
-sleep 1m
+echo "sleep 5"
+sleep 5
 
 echo "[TASK 11] Setting PS1"
 kubectl config rename-context "kubernetes-admin@kubernetes" "DOIK-Lab"
