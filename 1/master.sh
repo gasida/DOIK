@@ -9,28 +9,33 @@ mkdir -p /root/.kube
 cp -i /etc/kubernetes/admin.conf /root/.kube/config
 chown $(id -u):$(id -g) /root/.kube/config
 
-echo "[TASK 3] Install Calico CNI"
-#kubectl apply -f https://projectcalico.docs.tigera.io/manifests/calico.yaml
-kubectl apply -f https://raw.githubusercontent.com/gasida/book-k8s-network/main/5/calico-v3.22.2.yaml
-
-echo "[TASK 4] Install calicoctl Tool"
-curl -L https://github.com/projectcalico/calico/releases/download/v3-22.2/calicoctl-linux-amd64 -o calicoctl >/dev/null 2>&1
+echo "[TASK 3] Install calicoctl Tool"
+curl -L https://github.com/projectcalico/calico/releases/download/v3.22.2/calicoctl-linux-amd64 -o calicoctl
 chmod +x calicoctl && mv calicoctl /usr/bin
 
-echo "[TASK 5] Source the completion"
-## Source the completion script in your ~/.bashrc file
+echo "[TASK 5] Install Packages"
+apt install kubetail etcd-client -y
+
+echo "[TASK 6] Source the completion"
 echo 'source <(kubectl completion bash)' >> /etc/profile
 
-echo "[TASK 6] Alias kubectl to k"
+echo "[TASK 7] Alias kubectl to k"
 echo 'alias k=kubectl' >> /etc/profile
 echo 'complete -F __start_kubectl k' >> /etc/profile
 
-echo "[TASK 7] Install Kubectx & Kubens"
+echo "[TASK 8] Install Kubectx & Kubens"
 git clone https://github.com/ahmetb/kubectx /opt/kubectx
 ln -s /opt/kubectx/kubens /usr/local/bin/kubens
 ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
 
-echo "[TASK 8] Install Kubeps & Setting PS1"
+echo "[TASK 9] Install Helm"
+curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+echo "[TASK 10] Install Calico CNI"
+#kubectl apply -f https://projectcalico.docs.tigera.io/manifests/calico.yaml
+kubectl apply -f https://raw.githubusercontent.com/gasida/book-k8s-network/main/5/calico-v3.22.2.yaml
+
+echo "[TASK 11] Install Kubeps & Setting PS1"
 git clone https://github.com/jonmosco/kube-ps1.git /root/kube-ps1
 cat <<"EOT" >> /root/.bash_profile
 source /root/kube-ps1/kube-ps1.sh
@@ -44,16 +49,10 @@ PS1='$(kube_ps1)'$PS1
 EOT
 kubectl config rename-context "kubernetes-admin@kubernetes" "DOIK-Lab"
 
-echo "[TASK 9] Install Packages"
-apt install kubetail etcd-client -y
-
-echo "[TASK 10] Install Helm"
-curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-
-echo "[TASK 11] Install Metrics server - v0.6.1"
+echo "[TASK 12] Install Metrics server - v0.6.1"
 kubectl apply -f https://raw.githubusercontent.com/gasida/KANS/main/8/metrics-server.yaml
 
-echo "[TASK 12] Dynamically provisioning persistent local storage with Kubernetes - v0.0.22"
+echo "[TASK 13] Dynamically provisioning persistent local storage with Kubernetes - v0.0.22"
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
 kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
