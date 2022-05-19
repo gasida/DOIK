@@ -1,0 +1,436 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "<<<<< EC2 Node >>>>>"
+        Parameters:
+          - KeyName
+          - SgIngressCidr
+          - MasterNodeInstanceType
+          - WorkerNodeInstanceType
+          - LatestAmiId
+      - Label:
+          default: "<<<<< Region AZ >>>>>"
+        Parameters:
+          - TargetRegion
+          - AvailabilityZone1
+          - AvailabilityZone2
+      - Label:
+          default: "<<<<< VPC Subnet >>>>>"
+        Parameters:
+          - VpcBlock
+          - PublicSubnet1Block
+          - PublicSubnet2Block
+          - PrivateSubnet1Block
+          - PrivateSubnet2Block
+
+Parameters:
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances. Linked to AWS Parameter
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+
+  SgIngressCidr:
+    Description: The IP address range that can be used to communicate to the EC2 instances
+    Type: String
+    MinLength: '9'
+    MaxLength: '18'
+    Default: 0.0.0.0/0
+    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
+
+  MasterNodeInstanceType:
+    Description: Enter t2.micro, t2.small, t2.medium, t3.micro, t3.small, t3.medium. Default is t3.medium.
+    Type: String
+    Default: t3.medium
+    AllowedValues: 
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t3.micro
+      - t3.small
+      - t3.medium
+
+  WorkerNodeInstanceType:
+    Description: Enter t2.micro, t2.small, t2.medium, t3.micro, t3.small, t3.medium. Default is t3.medium.
+    Type: String
+    Default: t3.medium
+    AllowedValues: 
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t3.micro
+      - t3.small
+      - t3.medium
+
+  LatestAmiId:
+    Description: (DO NOT CHANGE)
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/canonical/ubuntu/server/22.04/stable/current/amd64/hvm/ebs-gp2/ami-id'
+    AllowedValues:
+      - /aws/service/canonical/ubuntu/server/22.04/stable/current/amd64/hvm/ebs-gp2/ami-id
+
+  TargetRegion:
+    Type: String
+    Default: ap-northeast-2
+
+  AvailabilityZone1:
+    Type: String
+    Default: ap-northeast-2a
+
+  AvailabilityZone2:
+    Type: String
+    Default: ap-northeast-2c
+
+  VpcBlock:
+    Type: String
+    Default: 192.168.0.0/16
+
+  PublicSubnet1Block:
+    Type: String
+    Default: 192.168.10.0/24
+
+  PublicSubnet2Block:
+    Type: String
+    Default: 192.168.20.0/24
+
+  PrivateSubnet1Block:
+    Type: String
+    Default: 192.168.30.0/24
+
+  PrivateSubnet2Block:
+    Type: String
+    Default: 192.168.40.0/24
+
+Resources:
+# VPC
+  MyVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcBlock
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-VPC
+
+# PublicSubnets
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Ref AvailabilityZone1
+      CidrBlock: !Ref PublicSubnet1Block
+      VpcId: !Ref MyVPC
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-PublicSubnet1
+        - Key: kubernetes.io/role/elb
+          Value: 1
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Ref AvailabilityZone2
+      CidrBlock: !Ref PublicSubnet2Block
+      VpcId: !Ref MyVPC
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-PublicSubnet2
+        - Key: kubernetes.io/role/elb
+          Value: 1
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref MyVPC
+
+  PublicSubnetRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-PublicSubnetRouteTable
+
+  PublicSubnetRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PublicSubnetRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicSubnetRouteTable
+
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicSubnetRouteTable
+
+# PrivateSubnets
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Ref AvailabilityZone1
+      CidrBlock: !Ref PrivateSubnet1Block
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-PrivateSubnet1
+        - Key: kubernetes.io/role/internal-elb
+          Value: 1
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Ref AvailabilityZone2
+      CidrBlock: !Ref PrivateSubnet2Block
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-PrivateSubnet2
+        - Key: kubernetes.io/role/internal-elb
+          Value: 1
+
+  PrivateSubnetRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-PrivateSubnetRouteTable
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateSubnetRouteTable
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateSubnetRouteTable
+
+# Security Group
+  EC2SG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub ${AWS::StackName}-HOST-SG
+      VpcId: !Ref MyVPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-HOST-SG
+      SecurityGroupIngress:
+      - IpProtocol: '-1'
+        #FromPort: '22'
+        #ToPort: '22'
+        CidrIp: !Ref SgIngressCidr
+      - IpProtocol: '-1'
+        CidrIp: !Ref VpcBlock
+      - IpProtocol: '-1'
+        CidrIp: 172.16.0.0/16
+      - IpProtocol: '-1'
+        CidrIp: 10.200.10.0/24
+
+# Master Node - MEC2 (Master EC2)
+  Instance1ENI1:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      Description: !Sub ${AWS::StackName}-Instance1ENI1
+      GroupSet:
+      - !Ref EC2SG
+      PrivateIpAddress: 192.168.10.10
+      SourceDestCheck: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-Instance1ENI1
+
+  MEC2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref MasterNodeInstanceType
+      ImageId: !Ref LatestAmiId
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-Master
+      NetworkInterfaces:
+        - NetworkInterfaceId: !Ref Instance1ENI1
+          DeviceIndex: '0'
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1 #xvda
+          Ebs:
+            VolumeType: gp3
+            VolumeSize: 20
+            DeleteOnTermination: true
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            hostnamectl --static set-hostname k8s-m
+
+            # Initial Config
+            curl -fsSL https://raw.githubusercontent.com/gasida/DOIK/main/1/init.sh | sh
+            
+            # Config Master
+            curl -fsSL https://raw.githubusercontent.com/gasida/DOIK/main/1/master.sh | sh
+
+# Worker Node - W1E2 (Worker1 EC2)
+  Instance2ENI1:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      Description: !Sub ${AWS::StackName}-Instance2ENI1
+      GroupSet:
+      - !Ref EC2SG
+      PrivateIpAddress: 192.168.10.101
+      SourceDestCheck: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-Instance2ENI1
+
+  W1EC2:
+    Type: AWS::EC2::Instance
+    DependsOn: MEC2
+    Properties:
+      InstanceType: !Ref WorkerNodeInstanceType
+      ImageId: !Ref LatestAmiId
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-Worker1
+      NetworkInterfaces:
+        - NetworkInterfaceId: !Ref Instance2ENI1
+          DeviceIndex: '0'
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1 #xvda
+          Ebs:
+            VolumeType: gp3
+            VolumeSize: 20
+            DeleteOnTermination: true
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            hostnamectl --static set-hostname k8s-w1
+
+            # Initial Config
+            curl -fsSL https://raw.githubusercontent.com/gasida/DOIK/main/1/init.sh | sh
+
+            # Config Worker
+            curl -fsSL https://raw.githubusercontent.com/gasida/DOIK/main/1/worker.sh | sh
+
+# Worker Node - W2EC2 (Worker2 EC2)
+  Instance3ENI1:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      Description: !Sub ${AWS::StackName}-Instance3ENI1
+      GroupSet:
+      - !Ref EC2SG
+      PrivateIpAddress: 192.168.10.102
+      SourceDestCheck: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-Instance3ENI1
+
+  W2EC2:
+    Type: AWS::EC2::Instance
+    DependsOn: MEC2
+    Properties:
+      InstanceType: !Ref WorkerNodeInstanceType
+      ImageId: !Ref LatestAmiId
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-Worker2
+      NetworkInterfaces:
+        - NetworkInterfaceId: !Ref Instance3ENI1
+          DeviceIndex: '0'
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1 #xvda
+          Ebs:
+            VolumeType: gp3
+            VolumeSize: 20
+            DeleteOnTermination: true
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            hostnamectl --static set-hostname k8s-w2
+
+            # Initial Config
+            curl -fsSL https://raw.githubusercontent.com/gasida/DOIK/main/1/init.sh | sh
+
+            # Config Worker
+            curl -fsSL https://raw.githubusercontent.com/gasida/DOIK/main/1/worker.sh | sh
+
+# Worker Node - W3EC2 (Worker3 EC2)
+  Instance4ENI1:
+    Type: AWS::EC2::NetworkInterface
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      Description: !Sub ${AWS::StackName}-Instance4ENI1
+      GroupSet:
+      - !Ref EC2SG
+      PrivateIpAddress: 192.168.20.103
+      SourceDestCheck: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-Instance4ENI1
+
+  W3EC2:
+    Type: AWS::EC2::Instance
+    DependsOn: W1EC2
+    Properties:
+      InstanceType: !Ref WorkerNodeInstanceType
+      ImageId: !Ref LatestAmiId
+      KeyName: !Ref KeyName
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-Worker3
+      NetworkInterfaces:
+        - NetworkInterfaceId: !Ref Instance4ENI1
+          DeviceIndex: '0'
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1 #xvda
+          Ebs:
+            VolumeType: gp3
+            VolumeSize: 20
+            DeleteOnTermination: true
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            hostnamectl --static set-hostname k8s-w3
+
+            # Initial Config
+            curl -fsSL https://raw.githubusercontent.com/gasida/DOIK/main/1/init.sh | sh
+
+            # Config Worker
+            curl -fsSL https://raw.githubusercontent.com/gasida/DOIK/main/1/worker.sh | sh
+
+
+Outputs:
+  MasterNodeIP:
+    Value: !GetAtt MEC2.PublicIp
+  WorkerNode1IP:
+    Value: !GetAtt W1EC2.PublicIp
+  WorkerNode2IP:
+    Value: !GetAtt W2EC2.PublicIp
+  WorkerNode3IP:
+    Value: !GetAtt W3EC2.PublicIp
