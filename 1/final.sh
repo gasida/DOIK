@@ -11,7 +11,7 @@ echo "[TASK 11] Setting PS1"
 kubectl config rename-context "kubernetes-admin@kubernetes" "DOIK-Lab"
 
 echo "[TASK 12] Install Metrics server - v0.6.1"
-kubectl apply -f https://raw.githubusercontent.com/gasida/KANS/main/8/metrics-server.yaml
+kubectl apply -f  https://raw.githubusercontent.com/gasida/DOIK/main/1/metrics-server.yaml
 
 echo "[TASK 13] Dynamically provisioning persistent local storage with Kubernetes - v0.0.22"
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
