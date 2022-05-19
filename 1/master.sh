@@ -31,14 +31,7 @@ ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
 echo "[TASK 9] Install Helm"
 curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
-echo "Sleep"
-sleep 3m
-
-echo "[TASK 10] Install Calico CNI"
-#kubectl apply -f https://projectcalico.docs.tigera.io/manifests/calico.yaml
-kubectl apply -f https://raw.githubusercontent.com/gasida/book-k8s-network/main/5/calico-v3.22.2.yaml
-
-echo "[TASK 11] Install Kubeps & Setting PS1"
+echo "[TASK 10] Install Kubeps"
 git clone https://github.com/jonmosco/kube-ps1.git /root/kube-ps1
 cat <<"EOT" >> /root/.bash_profile
 source /root/kube-ps1/kube-ps1.sh
@@ -50,13 +43,5 @@ KUBE_PS1_CLUSTER_FUNCTION=get_cluster_short
 KUBE_PS1_SUFFIX=') '
 PS1='$(kube_ps1)'$PS1
 EOT
-kubectl config rename-context "kubernetes-admin@kubernetes" "DOIK-Lab"
-
-echo "[TASK 12] Install Metrics server - v0.6.1"
-kubectl apply -f https://raw.githubusercontent.com/gasida/KANS/main/8/metrics-server.yaml
-
-echo "[TASK 13] Dynamically provisioning persistent local storage with Kubernetes - v0.0.22"
-kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
-kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
 echo ">>>> K8S Controlplane Config End <<<<"
