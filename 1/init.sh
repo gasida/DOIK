@@ -50,5 +50,6 @@ systemctl enable kubelet && systemctl start kubelet
 
 echo "[TASK 10] Git Clone"
 git clone https://github.com/gasida/DOIK.git /root/DOIK
+find /root/DOIK -regex ".*\.\(sh\)" -exec chmod 700 {} \;
 
 echo ">>>> Initial Config End <<<<"
