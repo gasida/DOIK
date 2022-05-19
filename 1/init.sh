@@ -29,6 +29,8 @@ echo "[TASK 6] Setting Local DNS Using Hosts file"
 echo "192.168.10.10 k8s-m" >> /etc/hosts
 echo "192.168.10.101 k8s-w1" >> /etc/hosts
 echo "192.168.10.102 k8s-w2" >> /etc/hosts
+echo "192.168.20.103 k8s-w3" >> /etc/hosts
+echo "192.168.20.104 k8s-w4" >> /etc/hosts
 
 echo "[TASK 7] Install Docker Engine"
 curl -fsSL https://get.docker.com | sh
