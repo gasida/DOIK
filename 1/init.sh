@@ -22,7 +22,7 @@ systemctl stop apparmor && systemctl disable apparmor
 
 echo "[TASK 5] Install Packages"
 apt update && apt install -y tree jq sshpass bridge-utils net-tools bat exa
-echo "alias aaacat='batcat --paging=never'" >> /etc/profile
+echo "alias cat='batcat --paging=never'" >> /etc/profile
 
 echo "[TASK 6] Setting Local DNS Using Hosts file"
 #for (( i=1; i<=$1; i++  )); do echo "192.168.10.10$i k8s-w$i" >> /etc/hosts; done
