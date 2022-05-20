@@ -21,7 +21,7 @@ systemctl stop ufw && systemctl disable ufw
 systemctl stop apparmor && systemctl disable apparmor
 
 echo "[TASK 5] Install Packages"
-apt update && apt install -y tree jq sshpass bridge-utils net-tools bat exa
+apt update && apt install -y tree jq sshpass bridge-utils net-tools bat exa duf
 echo "alias cat='batcat --paging=never'" >> /etc/profile
 
 echo "[TASK 6] Setting Local DNS Using Hosts file"
