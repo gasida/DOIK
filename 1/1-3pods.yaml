@@ -35,7 +35,7 @@ metadata:
   labels:
     app: testpod3
 spec:
-  nodeName: k8s-w2
+  nodeName: k8s-w3
   containers:
   - name: netshoot-pod
     image: nicolaka/netshoot
