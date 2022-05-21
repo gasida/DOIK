@@ -45,4 +45,11 @@ KUBE_PS1_SUFFIX=') '
 PS1='$(kube_ps1)'$PS1
 EOT
 
+echo "[TASK 11] Config NFS Server"
+apt install -y nfs-kernel-server
+mkdir /nfs4-share
+echo '/nfs4-share *(rw,sync,no_root_squash,no_subtree_check)' >> /etc/exports
+systemctl enable nfs-server
+exportfs -r && exportfs -v
+
 echo ">>>> K8S Controlplane Config End <<<<"

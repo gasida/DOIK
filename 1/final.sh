@@ -16,3 +16,8 @@ kubectl apply -f  https://raw.githubusercontent.com/gasida/DOIK/main/1/metrics-s
 echo "[TASK 13] Dynamically provisioning persistent local storage with Kubernetes - v0.0.22"
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
 kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+echo "[TASK 14] NFS External Provisioner - v4.0.16"
+# https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
+helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
+helm install nfs-provisioner -n kube-system nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.10.10 --set nfs.path=/nfs4-share
