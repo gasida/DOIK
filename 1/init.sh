@@ -21,7 +21,7 @@ systemctl stop ufw && systemctl disable ufw
 systemctl stop apparmor && systemctl disable apparmor
 
 echo "[TASK 5] Install Packages"
-apt update && apt install -y tree jq sshpass bridge-utils net-tools bat exa duf nfs-common
+apt update && apt install -y tree jq sshpass bridge-utils net-tools bat exa duf nfs-common sysstat
 echo "alias cat='batcat --paging=never'" >> /etc/profile
 # NFS Directory
 mkdir /mnt/nfs
