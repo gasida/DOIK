@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ${PODNAME}
+  labels:
+    app: myclient
+spec:
+  nodeName: k8s-m
+  containers:
+  - name: ${PODNAME}
+    image: mysql:8.0.29
+    command: ["tail"]
+    args: ["-f", "/dev/null"]
+  terminationGracePeriodSeconds: 0
