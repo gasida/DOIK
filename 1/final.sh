@@ -17,10 +17,15 @@ echo "[TASK 13] Dynamically provisioning persistent local storage with Kubernete
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
 kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
+echo "sleep 20"
+sleep 20
+
 echo "[TASK 14] NFS External Provisioner - v4.0.16"
 # https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
 kubectl taint node k8s-m node-role.kubernetes.io/master-
 helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
 helm install nfs-provisioner -n kube-system nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.10.10 --set nfs.path=/nfs4-share --set nodeSelector."kubernetes\.io/hostname"=k8s-m
-sleep 3
+
+echo "sleep 30"
+sleep 30
 kubectl taint node k8s-m node-role.kubernetes.io/master:NoSchedule
