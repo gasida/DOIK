@@ -21,7 +21,7 @@ echo "[TASK 14] NFS External Provisioner on k8s-m node - v4.0.16"
 # https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
 helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
 #helm install nfs-provisioner -n kube-system nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.10.10 --set nfs.path=/nfs4-share --set nodeSelector."kubernetes\.io/hostname"=k8s-m
-printf 'tolerations: [{key: node-role.kubernetes.io, value: "master", operator: Equal, effect: NoSchedule}]\n' | \
+printf 'tolerations: [{key: node-role.kubernetes.io/master, operator: Exists, effect: NoSchedule}]\n' | \
   helm install nfs-provisioner -n kube-system nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
   --set nfs.server=192.168.10.10 --set nfs.path=/nfs4-share --set nodeSelector."kubernetes\.io/hostname"=k8s-m \
   --values /dev/stdin
