@@ -173,7 +173,12 @@ spec:
         - mountPath: /tmp
           name: tmp-dir
       nodeSelector:
-        kubernetes.io/os: linux
+        kubernetes.io/hostname: k8s-m
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io
+          operator: Equal
+          value: master
       priorityClassName: system-cluster-critical
       serviceAccountName: metrics-server
       hostNetwork: true
