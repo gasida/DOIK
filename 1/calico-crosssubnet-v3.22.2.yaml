@@ -4374,17 +4374,10 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: k8s-m
-      # tolerations:
-      #   # Mark the pod as a critical add-on for rescheduling.
-      #   - key: CriticalAddonsOnly
-      #     operator: Exists
-      #   - key: node-role.kubernetes.io/master
-      #     effect: NoSchedule
       tolerations:
         - effect: NoSchedule
           key: node-role.kubernetes.io/master
-          operator: Equal
-          value: ""
+          operator: Exists
       serviceAccountName: calico-kube-controllers
       priorityClassName: system-cluster-critical
       containers:

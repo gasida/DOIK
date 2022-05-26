@@ -64,9 +64,8 @@ spec:
         kubernetes.io/hostname: k8s-m
       tolerations:
         - effect: NoSchedule
-          key: node-role.kubernetes.io
-          operator: Equal
-          value: master
+          key: node-role.kubernetes.io/master
+          operator: Exists
       containers:
         - name: local-path-provisioner
           image: rancher/local-path-provisioner:master-head
