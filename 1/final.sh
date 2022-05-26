@@ -19,8 +19,8 @@ kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storagec
 
 echo "[TASK 14] NFS External Provisioner - v4.0.16"
 # https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner
-#kubectl taint node k8s-m node-role.kubernetes.io-
-#helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
-#helm install nfs-provisioner -n kube-system nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.10.10 --set nfs.path=/nfs4-share --set nodeSelector."kubernetes\.io/hostname"=k8s-m
-#sleep 3
-#kubectl taint node k8s-m node-role.kubernetes.io=master:NoSchedule
+kubectl taint node k8s-m node-role.kubernetes.io/master-
+helm repo add nfs-subdir-external-provisioner https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner
+helm install nfs-provisioner -n kube-system nfs-subdir-external-provisioner/nfs-subdir-external-provisioner --set nfs.server=192.168.10.10 --set nfs.path=/nfs4-share --set nodeSelector."kubernetes\.io/hostname"=k8s-m
+sleep 3
+kubectl taint node k8s-m node-role.kubernetes.io/master:NoSchedule
