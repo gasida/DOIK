@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ${PODNAME}
+  labels:
+    app: myclient
+spec:
+  nodeName: k8s-m
+  containers:
+  - name: ${PODNAME}
+    image: bitnami/kafka:3.2
+    command: ["tail"]
+    args: ["-f", "/dev/null"]
+  terminationGracePeriodSeconds: 0
