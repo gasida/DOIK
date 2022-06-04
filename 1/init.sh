@@ -25,7 +25,6 @@ apt update && apt install -y tree jq sshpass bridge-utils net-tools bat exa duf 
 echo "alias cat='batcat --paging=never'" >> /etc/profile
 
 echo "[TASK 6] Setting Local DNS Using Hosts file"
-#for (( i=1; i<=$1; i++  )); do echo "192.168.10.10$i k8s-w$i" >> /etc/hosts; done
 echo "192.168.10.10 k8s-m" >> /etc/hosts
 echo "192.168.10.101 k8s-w1" >> /etc/hosts
 echo "192.168.10.102 k8s-w2" >> /etc/hosts
@@ -44,7 +43,7 @@ systemctl daemon-reload && systemctl restart docker
 echo "[TASK 9] Install Kubernetes components (kubeadm, kubelet and kubectl)"
 curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
-apt-get update && apt-get install -y kubelet=1.23.6-00 kubectl=1.23.6-00 kubeadm=1.23.6-00
+apt-get update && apt-get install -y kubelet=$KUBERNETES_VERSION-00 kubectl=$KUBERNETES_VERSION-00 kubeadm=$KUBERNETES_VERSION-00
 apt-mark hold kubelet kubeadm kubectl
 systemctl enable kubelet && systemctl start kubelet
 
