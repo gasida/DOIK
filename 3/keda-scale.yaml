@@ -16,6 +16,6 @@ spec:
         topic: my-topic
         bootstrapServers: my-cluster-kafka-bootstrap.kafka.svc:9092
         consumerGroup: keda-consumer
-        lagThreshold: 1
+        lagThreshold: "1"
         offsetResetPolicy: earliest
-        allowIdleConsumers: 1
+        allowIdleConsumers: "1"
