@@ -9,29 +9,19 @@ mkdir -p /root/.kube
 cp -i /etc/kubernetes/admin.conf /root/.kube/config
 chown $(id -u):$(id -g) /root/.kube/config
 
-echo "[TASK 3] Install calicoctl Tool"
-curl -L https://github.com/projectcalico/calico/releases/download/v3.22.2/calicoctl-linux-amd64 -o calicoctl
-chmod +x calicoctl && mv calicoctl /usr/bin
-
-echo "[TASK 5] Install Packages"
-apt install kubetail etcd-client -y
-
-echo "[TASK 6] Source the completion"
+echo "[TASK 3] Source the completion"
 echo 'source <(kubectl completion bash)' >> /etc/profile
 
-echo "[TASK 7] Alias kubectl to k"
+echo "[TASK 4] Alias kubectl to k"
 echo 'alias k=kubectl' >> /etc/profile
 echo 'complete -F __start_kubectl k' >> /etc/profile
 
-echo "[TASK 8] Install Kubectx & Kubens"
+echo "[TASK 5] Install Kubectx & Kubens"
 git clone https://github.com/ahmetb/kubectx /opt/kubectx
 ln -s /opt/kubectx/kubens /usr/local/bin/kubens
 ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx
 
-echo "[TASK 9] Install Helm"
-curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-
-echo "[TASK 10] Install Kubeps"
+echo "[TASK 6] Install Kubeps"
 git clone https://github.com/jonmosco/kube-ps1.git /root/kube-ps1
 cat <<"EOT" >> /root/.bash_profile
 source /root/kube-ps1/kube-ps1.sh
@@ -45,11 +35,17 @@ KUBE_PS1_SUFFIX=') '
 PS1='$(kube_ps1)'$PS1
 EOT
 
-echo "[TASK 11] Config NFS Server"
-apt install -y nfs-kernel-server
-mkdir /nfs4-share
-echo '/nfs4-share *(rw,sync,no_root_squash,no_subtree_check)' >> /etc/exports
-systemctl enable nfs-server
-exportfs -r && exportfs -v
+echo "[TASK 7] Install Packages"
+apt install kubetail etcd-client -y
+
+echo "[TASK 8] Install Helm"
+curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+# echo "[TASK 9] Config NFS Server"
+# apt install -y nfs-kernel-server
+# mkdir /nfs4-share
+# echo '/nfs4-share *(rw,sync,no_root_squash,no_subtree_check)' >> /etc/exports
+# systemctl enable nfs-server
+# exportfs -r && exportfs -v
 
 echo ">>>> K8S Controlplane Config End <<<<"
