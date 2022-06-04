@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bridge-configuration
+data:
+  bridge.properties: |
+    bridge.id=bridge-sidecar
+
+    # HTTP related settings
+    http.enabled=true
+    http.host=127.0.0.1
+    http.port=8080
+
+    # Configuration Providers
+    kafka.config.providers=env
+    kafka.config.providers.env.class=io.strimzi.kafka.EnvVarConfigProvider
+
+    # General Kafka settings
+    kafka.bootstrap.servers=${env:BOOTSTRAP_SERVERS}
+    kafka.security.protocol=SSL
+    kafka.ssl.keystore.type=PEM
+    kafka.ssl.keystore.certificate.chain=${env:USER_CRT}
+    kafka.ssl.keystore.key=${env:USER_KEY}
+    kafka.ssl.truststore.type=PEM
+    kafka.ssl.truststore.certificates=${env:CA_CRT}
+    kafka.ssl.endpoint.identification.algorithm=HTTPS
+
+    # Kafka Producer options
+    kafka.producer.acks=1
+
+    # Kafka Consumer options
+    kafka.consumer.auto.offset.reset=earliest
