@@ -41,6 +41,9 @@ apt install kubetail etcd-client -y
 echo "[TASK 8] Install Helm"
 curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
+echo "[TASK 9] Create Directory"
+mkdir /nfs4-share
+
 # echo "[TASK 9] Config NFS Server"
 # apt install -y nfs-kernel-server
 # mkdir /nfs4-share
