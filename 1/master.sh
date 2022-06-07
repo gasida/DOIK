@@ -26,7 +26,7 @@ git clone https://github.com/jonmosco/kube-ps1.git /root/kube-ps1
 cat <<"EOT" >> /root/.bash_profile
 source /root/kube-ps1/kube-ps1.sh
 KUBE_PS1_SYMBOL_ENABLE=true
-KUBE_PS1_SYMBOL_DEFAULT=🍉
+KUBE_PS1_SYMBOL_DEFAULT=🚴
 function get_cluster_short() {
   echo "$1" | cut -d . -f1
 }
@@ -43,12 +43,5 @@ curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | 
 
 echo "[TASK 9] Create Directory"
 mkdir /nfs4-share
-
-# echo "[TASK 9] Config NFS Server"
-# apt install -y nfs-kernel-server
-# mkdir /nfs4-share
-# echo '/nfs4-share *(rw,sync,no_root_squash,no_subtree_check)' >> /etc/exports
-# systemctl enable nfs-server
-# exportfs -r && exportfs -v
 
 echo ">>>> K8S Controlplane Config End <<<<"

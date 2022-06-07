@@ -6,7 +6,7 @@ echo "[TASK 9] Install Flannel CNI"
 kubectl apply -f https://raw.githubusercontent.com/gasida/DOIK/main/1/kube-flannel-v0.18.0.yml
 
 echo "sleep 3"
-sleep 5
+sleep 3
 
 echo "[TASK 10] Setting PS1"
 kubectl config rename-context "kubernetes-admin@kubernetes" "DOIK-Lab"
@@ -27,7 +27,7 @@ printf 'tolerations: [{key: node-role.kubernetes.io/master, operator: Exists, ef
   --values /dev/stdin
 
 echo "[TASK 14] K8S v1.24 : k8s-m node config taint & label"
-kubectl taint node k8s-m node-role.kubernetes.io/control-plane-
-kubectl label nodes k8s-m node-role.kubernetes.io/master=
+kubectl taint node k8s-m node-role.kubernetes.io/control-plane- >/dev/null 2>&1
+kubectl label nodes k8s-m node-role.kubernetes.io/master= >/dev/null 2>&1
 
 echo ">>>> K8S Final Config End <<<<"
