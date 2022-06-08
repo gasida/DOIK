@@ -1,0 +1,60 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sysbench-oltp-read-only
+spec:
+  template:
+    spec:
+      initContainers:
+      - args:
+        - --db-driver=mysql
+        - --mysql-host=mycluster.mysql-cluster
+        - --mysql-port=3306
+        - --mysql-user=sysbench
+        - --mysql-password=sysbench
+        - --mysql-db=sysbench
+        - --table-size=1000000
+        - --threads=4
+        - --tables=2
+        - /usr/local/share/sysbench/oltp_read_only.lua
+        - prepare
+        image: vonogoru123/sysbench
+        name: sysbench-prepare
+      - args:
+        - --db-driver=mysql
+        - --mysql-host=mycluster.mysql-cluster
+        - --mysql-port=3306
+        - --mysql-user=sysbench
+        - --mysql-password=sysbench
+        - --mysql-db=sysbench
+        - --report-interval=10
+        - --table-size=1000000
+        - --threads=4
+        - --tables=2
+        - --time=180
+        - /usr/local/share/sysbench/oltp_read_only.lua
+        - run
+        image: vonogoru123/sysbench
+        name: sysbench-run
+      containers:
+      - args:
+        - --db-driver=mysql
+        - --mysql-host=mycluster.mysql-cluster
+        - --mysql-port=3306
+        - --mysql-user=sysbench
+        - --mysql-password=sysbench
+        - --mysql-db=sysbench
+        - --table-size=1000000
+        - --threads=4
+        - --tables=2
+        - /usr/local/share/sysbench/oltp_read_only.lua
+        - cleanup
+        image: vonogoru123/sysbench
+        name: sysbench-cleanup
+      nodeSelector:
+        kubernetes.io/hostname: k8s-m
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      restartPolicy: Never
