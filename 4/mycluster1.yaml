@@ -1,0 +1,68 @@
+apiVersion: psmdb.percona.com/v1-12-0
+kind: PerconaServerMongoDB
+metadata:
+  name: ${MYCLUSTERNAME}-db
+  finalizers:
+    - delete-psmdb-pods-in-order
+#    - delete-psmdb-pvc
+spec:
+  crVersion: 1.12.0
+  image: percona/percona-server-mongodb:5.0.7-6
+  imagePullPolicy: Always
+  allowUnsafeConfigurations: false
+  updateStrategy: SmartUpdate
+  upgradeOptions:
+    versionServiceEndpoint: https://check.percona.com
+    apply: 5.0-recommended
+    schedule: "0 2 * * *"
+    setFCV: false
+  secrets:
+    users: ${MYCLUSTERNAME}-secrets
+    encryptionKey: ${MYCLUSTERNAME}-mongodb-encryption-key
+  pmm:
+    enabled: false
+    image: percona/pmm-client:2.27.0
+    serverHost: monitoring-service
+#    mongodParams: --environment=ENVIRONMENT
+#    mongosParams: --environment=ENVIRONMENT
+
+  replsets:
+  - name: rs0
+    size: 3
+    affinity:
+      antiAffinityTopologyKey: "kubernetes.io/hostname"
+    podDisruptionBudget:
+      maxUnavailable: 1
+    expose:
+      enabled: false
+      exposeType: ClusterIP
+    resources:
+      limits:
+        cpu: "300m"
+        memory: "0.5G"
+      requests:
+        cpu: "300m"
+        memory: "0.5G"
+    volumeSpec:
+      persistentVolumeClaim:
+        resources:
+          requests:
+            storage: 5Gi
+
+    nonvoting:
+      enabled: false
+    arbiter:
+      enabled: false
+
+  sharding:
+    enabled: false
+
+  backup:
+    enabled: false
+    image: percona/percona-backup-mongodb:1.7.0
+    serviceAccountName: percona-server-mongodb-operator
+    pitr:
+      enabled: false
+#      oplogSpanMin: 10
+      compressionType: gzip
+      compressionLevel: 6
