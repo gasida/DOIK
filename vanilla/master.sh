@@ -44,4 +44,9 @@ curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | 
 echo "[TASK 9] Create Directory"
 mkdir /nfs4-share
 
+echo "[TASK 10] Git Clone"
+git clone https://github.com/gasida/DOIK.git /root/DOIK
+find /root/DOIK -regex ".*\.\(sh\)" -exec chmod 700 {} \;
+cp /root/DOIK/vanilla/final.sh /root/final.sh
+
 echo ">>>> K8S Controlplane Config End <<<<"
