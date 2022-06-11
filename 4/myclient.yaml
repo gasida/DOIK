@@ -8,7 +8,7 @@ spec:
   nodeName: k8s-m
   containers:
   - name: ${PODNAME}
-    image: percona/percona-server-mongodb:5.0.7-6
+    image: percona/percona-server-mongodb:${VERSION}
     command: ["tail"]
     args: ["-f", "/dev/null"]
   terminationGracePeriodSeconds: 0
