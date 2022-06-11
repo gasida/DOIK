@@ -29,4 +29,9 @@ echo "[TASK 14] K8S v1.24 : k8s-m node config taint & label"
 kubectl taint node k8s-m node-role.kubernetes.io/control-plane- >/dev/null 2>&1
 kubectl label nodes k8s-m node-role.kubernetes.io/master= >/dev/null 2>&1
 
+echo "[TASK 15] Git Clone"
+git clone https://github.com/gasida/DOIK.git /root/DOIK
+find /root/DOIK -regex ".*\.\(sh\)" -exec chmod 700 {} \;
+cp /root/DOIK/vanilla/final.sh /root/final.sh
+
 echo ">>>> K8S Final Config End <<<<"
