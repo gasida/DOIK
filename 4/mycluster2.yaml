@@ -262,36 +262,15 @@ spec:
 #        disktype: ssd
 
   - name: rs1
-  size: 3
-  affinity:
-    antiAffinityTopologyKey: "kubernetes.io/hostname"
-  podDisruptionBudget:
-    maxUnavailable: 1
-#      minAvailable: 0
-  expose:
-    enabled: false
-    exposeType: ClusterIP
-  resources:
-    limits:
-      cpu: "300m"
-      memory: "0.5G"
-    requests:
-      cpu: "300m"
-      memory: "0.5G"
-  volumeSpec:
-    persistentVolumeClaim:
-      resources:
-        requests:
-          storage: 5Gi
-
-  nonvoting:
-    enabled: false
     size: 3
     affinity:
       antiAffinityTopologyKey: "kubernetes.io/hostname"
     podDisruptionBudget:
       maxUnavailable: 1
-#        minAvailable: 0
+  #      minAvailable: 0
+    expose:
+      enabled: false
+      exposeType: ClusterIP
     resources:
       limits:
         cpu: "300m"
@@ -304,11 +283,32 @@ spec:
         resources:
           requests:
             storage: 5Gi
-  arbiter:
-    enabled: false
-    size: 1
-    affinity:
-      antiAffinityTopologyKey: "kubernetes.io/hostname"
+
+    nonvoting:
+      enabled: false
+      size: 3
+      affinity:
+        antiAffinityTopologyKey: "kubernetes.io/hostname"
+      podDisruptionBudget:
+        maxUnavailable: 1
+  #        minAvailable: 0
+      resources:
+        limits:
+          cpu: "300m"
+          memory: "0.5G"
+        requests:
+          cpu: "300m"
+          memory: "0.5G"
+      volumeSpec:
+        persistentVolumeClaim:
+          resources:
+            requests:
+              storage: 5Gi
+    arbiter:
+      enabled: false
+      size: 1
+      affinity:
+        antiAffinityTopologyKey: "kubernetes.io/hostname"
 
   sharding:
     enabled: true
