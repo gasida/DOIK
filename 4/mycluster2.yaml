@@ -267,7 +267,6 @@ spec:
       antiAffinityTopologyKey: "kubernetes.io/hostname"
     podDisruptionBudget:
       maxUnavailable: 1
-  #      minAvailable: 0
     expose:
       enabled: false
       exposeType: ClusterIP
@@ -291,7 +290,6 @@ spec:
         antiAffinityTopologyKey: "kubernetes.io/hostname"
       podDisruptionBudget:
         maxUnavailable: 1
-  #        minAvailable: 0
       resources:
         limits:
           cpu: "300m"
