@@ -14,8 +14,6 @@ spec:
     pg_hba:
       - host all postgres all trust
   primaryUpdateStrategy: unsupervised
-  minSyncReplicas: 1
-  maxSyncReplicas: 2
   enableSuperuserAccess: true
   bootstrap:
     initdb:
