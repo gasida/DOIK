@@ -11,6 +11,7 @@ spec:
   postgresql:
     parameters:
       max_worker_processes: "40"
+      timezone: "Asia/Seoul"
     pg_hba:
       - host all postgres all trust
   primaryUpdateStrategy: unsupervised
