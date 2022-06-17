@@ -1,0 +1,21 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: mycluster
+spec:
+  instances: 3
+  storage:
+    size: 3Gi
+  postgresql:
+    pg_hba:
+      - host all postgres all trust
+  backup:
+    barmanObjectStore:
+      destinationPath: "s3://${BUCKET}"
+      s3Credentials:
+        accessKeyId:
+          name: aws-creds
+          key: ACCESS_KEY_ID
+        secretAccessKey:
+          name: aws-creds
+          key: ACCESS_SECRET_KEY
