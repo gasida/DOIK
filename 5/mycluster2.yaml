@@ -11,4 +11,4 @@ spec:
     pg_hba:
       - host all postgres all trust
   minSyncReplicas: 1
-  maxSyncReplicas: 2s
+  maxSyncReplicas: 2
