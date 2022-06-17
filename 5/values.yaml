@@ -1,0 +1,2 @@
+nodeSelector: {kubernetes.io/hostname: k8s-m}
+tolerations: [{key: node-role.kubernetes.io/master, operator: Exists, effect: NoSchedule}]
