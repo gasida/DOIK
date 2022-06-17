@@ -4,7 +4,7 @@ kind: Cluster
 metadata:
   name: mycluster
 spec:
-  imageName: ghcr.io/cloudnative-pg/postgresql:14
+  imageName: ghcr.io/cloudnative-pg/postgresql:14.2
   instances: 3
   storage:
     size: 3Gi
@@ -14,3 +14,13 @@ spec:
     pg_hba:
       - host all postgres all trust
   primaryUpdateStrategy: unsupervised
+  minSyncReplicas: 1
+  maxSyncReplicas: 2
+  enableSuperuserAccess: true
+  bootstrap:
+    initdb:
+      database: app
+      encoding: UTF8
+      localeCType: C
+      localeCollate: C
+      owner: app
