@@ -59,6 +59,17 @@ echo "[TASK 8] Using the systemd cgroup driver"
 sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
 systemctl restart containerd
 
+# Change container runtime args
+cat <<EOF > /etc/default/kubelet
+KUBELET_KUBEADM_ARGS=--container-runtime=remote --container-runtime-endpoint=/run/containerd/containerd.sock --cgroup-driver=systemd
+EOF
+
+# Change runtime endpoint
+cat <<EOF > /etc/crictl.yaml
+runtime-endpoint: unix:///run/containerd/containerd.sock
+image-endpoint: unix:///run/containerd/containerd.sock
+EOF
+
 echo "[TASK 9] Install Kubernetes components (kubeadm, kubelet and kubectl)"
 curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" > /etc/apt/sources.list.d/kubernetes.list
