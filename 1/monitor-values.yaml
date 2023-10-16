@@ -1,0 +1,53 @@
+prometheus:
+  prometheusSpec:
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    retention: 5d
+    retentionSize: "10GiB"
+    scrapeInterval: '15s'
+    evaluationInterval: '15s'
+
+  ingress:
+    enabled: true
+    ingressClassName: alb
+    hosts: 
+      - prometheus.$MyDomain
+    paths: 
+      - /*
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
+      alb.ingress.kubernetes.io/certificate-arn: $CERT_ARN
+      alb.ingress.kubernetes.io/success-codes: 200-399
+      alb.ingress.kubernetes.io/load-balancer-name: myeks-ingress-alb
+      alb.ingress.kubernetes.io/group.name: study
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+
+grafana:
+  defaultDashboardsTimezone: Asia/Seoul
+  adminPassword: prom-operator
+
+  ingress:
+    enabled: true
+    ingressClassName: alb
+    hosts: 
+      - grafana.$MyDomain
+    paths: 
+      - /*
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
+      alb.ingress.kubernetes.io/certificate-arn: $CERT_ARN
+      alb.ingress.kubernetes.io/success-codes: 200-399
+      alb.ingress.kubernetes.io/load-balancer-name: myeks-ingress-alb
+      alb.ingress.kubernetes.io/group.name: study
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+
+defaultRules:
+  create: false
+kubeEtcd:
+  enabled: false
+alertmanager:
+  enabled: false
