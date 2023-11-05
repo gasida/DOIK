@@ -15,13 +15,16 @@ spec:
     apply: disabled
     schedule: "0 2 * * *"
     setFCV: false
+
   secrets: 
     users: my-cluster-name-secrets
     encryptionKey: my-cluster-name-mongodb-encryption-key
+
   pmm: 
     enabled: false
     image: percona/pmm-client:2.39.0
     serverHost: monitoring-service
+
   replsets: 
   - name: rs0
     size: 3
@@ -81,6 +84,66 @@ spec:
         requests: 
           cpu: "300m"
           memory: "0.5G"
+
+  - name: rs1
+    size: 3
+    # for more configuration fields refer to https://docs.mongodb.com/manual/reference/configuration-options/
+    configuration: |
+      operationProfiling:
+        mode: slowOp
+      systemLog:
+        verbosity: 1
+    affinity: 
+      antiAffinityTopologyKey: "kubernetes.io/hostname"
+    podDisruptionBudget: 
+      maxUnavailable: 1
+    expose: 
+      enabled: false
+      exposeType: ClusterIP
+    resources: 
+      limits: 
+        cpu: "300m"
+        memory: "0.5G"
+      requests: 
+        cpu: "300m"
+        memory: "0.5G"
+    volumeSpec: 
+      persistentVolumeClaim: 
+        resources: 
+          requests: 
+            storage: 3Gi
+    nonvoting: 
+      enabled: false
+      size: 3
+      affinity: 
+        antiAffinityTopologyKey: "kubernetes.io/hostname"
+      podDisruptionBudget: 
+        maxUnavailable: 1
+      resources: 
+        limits: 
+          cpu: "300m"
+          memory: "0.5G"
+        requests: 
+          cpu: "300m"
+          memory: "0.5G"
+      volumeSpec: 
+        persistentVolumeClaim: 
+          resources: 
+            requests: 
+              storage: 3Gi
+    arbiter: 
+      enabled: false
+      size: 1
+      affinity: 
+        antiAffinityTopologyKey: "kubernetes.io/hostname"
+      resources: 
+        limits: 
+          cpu: "300m"
+          memory: "0.5G"
+        requests: 
+          cpu: "300m"
+          memory: "0.5G"
+
   sharding: 
     enabled: true
     configsvrReplSet: 
@@ -104,6 +167,7 @@ spec:
           resources: 
             requests: 
               storage: 3Gi
+
     mongos: 
       size: 3
       # for more configuration fields refer to https://docs.mongodb.com/manual/reference/configuration-options/
@@ -123,6 +187,7 @@ spec:
           memory: "0.5G"
       expose: 
         exposeType: LoadBalancer
+
   backup: 
     enabled: false
     image: percona/percona-backup-mongodb:2.3.0
