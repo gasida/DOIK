@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: myclient
+  labels:
+    app: mongodb
+spec:
+  selector:
+    matchLabels:
+      name: mongodb
+  template:
+    metadata:
+      labels:
+        name: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: percona/percona-server-mongodb:${VERSION}
+        command: ["tail"]
+        args: ["-f", "/dev/null"]
+      terminationGracePeriodSeconds: 0
