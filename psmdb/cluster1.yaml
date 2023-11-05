@@ -19,7 +19,7 @@ spec:
     users: my-cluster-name-secrets
     encryptionKey: my-cluster-name-mongodb-encryption-key
   pmm: 
-    enabled: true
+    enabled: false 
     image: percona/pmm-client:2.39.0
     serverHost: monitoring-service
   replsets: 
