@@ -186,7 +186,7 @@ spec:
           cpu: "300m"
           memory: "0.5G"
       expose: 
-        exposeType: LoadBalancer
+        exposeType: ClusterIP
 
   backup: 
     enabled: false
