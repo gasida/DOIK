@@ -1,0 +1,82 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: my-cluster
+spec:
+  kafka:
+    version: 3.6.0
+    replicas: 3
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: false
+      - name: external
+        port: 9094
+        type: nodeport
+        tls: false
+    readinessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    config:
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 3
+      min.insync.replicas: 2
+      inter.broker.protocol.version: "3.6"
+    storage:
+      type: jbod
+      volumes:
+      - id: 0
+        type: persistent-claim
+        size: 10Gi
+        deleteClaim: true
+    template: 
+      pod: 
+        affinity: 
+          podAntiAffinity: 
+            requiredDuringSchedulingIgnoredDuringExecution: 
+              - labelSelector: 
+                  matchExpressions: 
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values: 
+                        - kafka
+                topologyKey: "topology.ebs.csi.aws.com/zone"
+
+  zookeeper:
+    replicas: 3
+    readinessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    storage:
+      type: persistent-claim
+      size: 10Gi
+      deleteClaim: true
+    template: 
+      pod: 
+        affinity: 
+          podAntiAffinity: 
+            requiredDuringSchedulingIgnoredDuringExecution: 
+              - labelSelector: 
+                  matchExpressions: 
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values: 
+                        - zookeeper
+                topologyKey: "topology.ebs.csi.aws.com/zone"
+
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
